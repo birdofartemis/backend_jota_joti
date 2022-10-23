@@ -1,0 +1,45 @@
+version: '3.1'
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:14.2-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "u4Me5Pl&pi24"
+      POSTGRES_DB: "jotajoti"
+      POSTGRES_USER: "root"
+    ports:
+      - "5432:5432"
+    networks:
+      - backendnetowork
+  backend:
+    image: marcomedeiros/scouts-jota-joti:1.0.1
+    container_name: jota-joti-backend
+    restart: always
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    environment:
+      - URL_DB=postgres
+    ports:
+      - "9000:9000"
+    networks:
+      - backendnetowork
+  frontend:
+    image: thealonso95/app-prod:latest
+    container_name: jota-joti-frontend
+    restart: always
+    depends_on:
+      - backend
+    links:
+      - backend
+    environment:
+      - URL_API=backend
+    ports:
+      - "80:80"
+    networks:
+      - backendnetowork
+networks:
+  backendnetowork:
+    name: custom_network
